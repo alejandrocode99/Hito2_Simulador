@@ -1,0 +1,8 @@
+# Build outputs and object files
+build/
+*.o
+ecu_simulation
+
+# System / IDE files
+.DS_Store
+*.swp

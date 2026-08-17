@@ -3,6 +3,9 @@ build/
 *.o
 ecu_simulation
 
+# Reference documentation
+Hito_2.txt
+
 # System / IDE files
 .DS_Store
 *.swp

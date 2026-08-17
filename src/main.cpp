@@ -41,10 +41,11 @@ int main() {
     GatewayECU gateway;
     ControlECU control;
 
-    // Execute Self-Test sequence at system startup
-    control.runSelfTest();
-
     SignalData currentSignals;
+
+    // Execute Self-Test sequence at system startup (initializes signals to reference values)
+    control.runSelfTest(currentSignals);
+
     SignalValidation currentValidation = gateway.validateSignals(currentSignals);
     DiagnosticReport currentReport = control.evaluateAndDecide(currentSignals, currentValidation);
 
@@ -89,7 +90,7 @@ int main() {
                 break;
             }
             case 3: {
-                control.restart();
+                control.restart(currentSignals);
                 currentValidation = gateway.validateSignals(currentSignals);
                 currentReport = control.evaluateAndDecide(currentSignals, currentValidation);
                 break;

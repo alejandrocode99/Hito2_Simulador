@@ -9,9 +9,24 @@ void ControlECU::init() {
     currentState = ECUState::INIT;
 }
 
-bool ControlECU::runSelfTest() {
+SignalData ControlECU::getReferenceSignals() {
+    SignalData ref;
+    ref.speed = 0.0;
+    ref.rpm = 2000;
+    ref.temperature = 50.0;
+    ref.throttle = 0.0;
+    ref.battery = 12.0;
+    return ref;
+}
+
+bool ControlECU::runSelfTest(SignalData& signals) {
     currentState = ECUState::SELF_TEST;
     std::cout << "[SYSTEM] Control ECU executing Self-Test..." << std::endl;
+
+    // Reset signals to reference values during self test
+    signals = getReferenceSignals();
+    std::cout << "[SELF_TEST] Setting reference signals (Speed: 0 km/h, RPM: 2000 rpm, Temp: 50 C, Throttle: 0 %, Battery: 12 V)... OK" << std::endl;
+
     std::cout << "[SELF_TEST] Verifying Gateway ECU communication channels... OK" << std::endl;
     std::cout << "[SELF_TEST] Verifying state machine transition logic... OK" << std::endl;
     std::cout << "[SELF_TEST] Verifying sensor input buffers... OK" << std::endl;
@@ -20,10 +35,10 @@ bool ControlECU::runSelfTest() {
     return true;
 }
 
-void ControlECU::restart() {
+void ControlECU::restart(SignalData& signals) {
     std::cout << "\n[SYSTEM] System restart requested..." << std::endl;
     init();
-    runSelfTest();
+    runSelfTest(signals);
 }
 
 void ControlECU::shutdown() {

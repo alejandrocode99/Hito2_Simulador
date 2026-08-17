@@ -13,9 +13,12 @@ public:
 
     // Lifecycle methods
     void init();
-    bool runSelfTest();
-    void restart();
+    bool runSelfTest(SignalData& signals);
+    void restart(SignalData& signals);
     void shutdown();
+
+    // Helper to get default reference signal values
+    static SignalData getReferenceSignals();
 
     // Core decision engine
     DiagnosticReport evaluateAndDecide(const SignalData& signals, const SignalValidation& validation);

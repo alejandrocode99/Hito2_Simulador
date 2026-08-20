@@ -1,5 +1,6 @@
 #include <iostream>
 #include <limits>
+#include <algorithm>
 #include "GatewayECU.hpp"
 #include "ControlECU.hpp"
 
@@ -52,15 +53,16 @@ int main() {
     bool running = true;
     while (running) {
         std::cout << "\nSuggested Menu:\n";
-        std::cout << "1. Input signal values\n";
-        std::cout << "2. Show current system state\n";
-        std::cout << "3. Restart system\n";
-        std::cout << "4. Exit\n";
-        std::cout << "Select option [1-4]: ";
+std::cout << "1. Input signal values\n";
+        std::cout << "2. Simulate system behavior (could get out of bounds)\n";
+        std::cout << "3. Show current system state\n";
+        std::cout << "4. Restart system\n";
+        std::cout << "5. Exit\n";
+        std::cout << "Select option [1-5]: ";
 
         int choice;
         if (!(std::cin >> choice)) {
-            std::cout << "[ERROR] Invalid choice. Please enter a number between 1 and 4.\n";
+            std::cout << "[ERROR] Invalid choice. Please enter a number between 1 and 5.\n";
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             continue;
@@ -85,23 +87,46 @@ int main() {
                 control.displayPlatformStatus(currentSignals, currentValidation, currentReport);
                 break;
             }
+            
             case 2: {
+
+                std::cout << "\n--- Simulating System Behavior (Random Signals) ---\n";
+                    //for (int step = 1; step <= 5; ++step) {
+                    //std::cout << "\n>>> [SIMULATION STEP " << step << "/5] <<<\n";
+
+                    // 1. Generar señales aleatorias desde el Gateway
+                    currentSignals = gateway.generateRandomSignals();
+
+                    // 2. Validar plausibilidad física con las reglas del Gateway
+                    currentValidation = gateway.validateSignals(currentSignals);
+
+                     // 3. Evaluar reglas de diagnóstico en la ECU de Control
+                    currentReport = control.evaluateAndDecide(currentSignals, currentValidation);
+
+                    // 4. Desplegar resultados
+                    control.displayPlatformStatus(currentSignals, currentValidation, currentReport);
+                //}
+                break;
+
+            }
+            
+            case 3: {
                 control.displayPlatformStatus(currentSignals, currentValidation, currentReport);
                 break;
             }
-            case 3: {
+            case 4: {
                 control.restart(currentSignals);
                 currentValidation = gateway.validateSignals(currentSignals);
                 currentReport = control.evaluateAndDecide(currentSignals, currentValidation);
                 break;
             }
-            case 4: {
+            case 5: {
                 control.shutdown();
                 running = false;
                 break;
             }
             default: {
-                std::cout << "[ERROR] Invalid option selected. Please choose 1, 2, 3, or 4.\n";
+                std::cout << "[ERROR] Invalid option selected. Please choose 1, 2, 3, 4 or 5.\n";
                 break;
             }
         }

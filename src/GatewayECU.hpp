@@ -10,6 +10,9 @@ public:
     // Validate individual ranges and check for physical signal plausibility
     SignalValidation validateSignals(const SignalData& signals) const;
 
+    // Generate random signals within safe ranges
+    SignalData generateRandomSignals() const;
+
     // Range validation helper functions
     static bool validateSpeed(double speed);
     static bool validateRPM(int rpm);

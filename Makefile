@@ -1,4 +1,5 @@
 SOURCE_DIR = src
+INCLUDE_DIR = $(SOURCE_DIR)/inc
 BUILD_DIR = build
 CXX = g++
 CXXFLAGS = -Wall -Wextra -pedantic -std=c++17
@@ -12,7 +13,7 @@ $(TARGET): $(OBJS)
 
 $(BUILD_DIR)/%.o: $(SOURCE_DIR)/%.cpp
 	@mkdir -p $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -I$(INCLUDE_DIR) -c $< -o $@
 
 
 
@@ -26,4 +27,4 @@ clean:
 cppcheck:
 	@$(CPPCHECK)  --quiet --enable=all --error-exitcode=1 \
 	--inline-suppr --inconclusive \
-	-I$(SOURCE_DIR) --std=c++17 $(SOURCE_DIR) 
+	-I$(INCLUDE_DIR) --std=c++17 $(SOURCE_DIR) 

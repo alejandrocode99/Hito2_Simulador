@@ -8,7 +8,7 @@ public:
     GatewayECU() = default;
 
     // Validate individual ranges and check for physical signal plausibility
-    SignalValidation validateSignals(const SignalData& signals) const;
+    static SignalValidation validateSignals(const SignalData& signals);
 
     // Range validation helper functions
     static bool validateSpeed(double speed);

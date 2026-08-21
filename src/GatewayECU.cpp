@@ -1,4 +1,6 @@
 #include "GatewayECU.hpp"
+#include <random>
+#include <algorithm>
 #include <sstream>
 
 bool GatewayECU::validateSpeed(double speed) {
@@ -64,4 +66,24 @@ SignalValidation GatewayECU::validateSignals(const SignalData& signals)  {
     val.allValid = val.speedValid && val.rpmValid && val.temperatureValid && val.throttleValid && val.batteryValid;
 
     return val;
+}
+
+SignalData GatewayECU::generateRandomSignals() const {
+    static std::mt19937 gen(std::random_device{}());
+
+    // Limits for each random value signal
+    std::uniform_real_distribution<double> speedDist(0.0, 275.0);
+    std::uniform_int_distribution<int> rpmDist(0, 8000);
+    std::uniform_real_distribution<double> tempDist(-10.0, 120.0); 
+    std::uniform_real_distribution<double> throttleDist(0.0, 110.0);
+    std::uniform_real_distribution<double> batteryDist(9.0, 16.0);
+
+    SignalData randomSignals;
+    randomSignals.speed = speedDist(gen);
+    randomSignals.rpm = rpmDist(gen);
+    randomSignals.temperature = tempDist(gen);
+    randomSignals.throttle = throttleDist(gen);
+    randomSignals.battery = batteryDist(gen);
+
+    return randomSignals;
 }

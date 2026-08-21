@@ -95,17 +95,17 @@ int main() {
             
             case 2: {
 
-                // Limpiar cualquier carácter residual en el buffer de entrada
+                // clear any residual characters in the input buffer
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-                // Iniciar escucha asíncrona de teclado (espera a que el usuario presione Enter)
+                // start an asynchronous listener to stop the simulation when Enter is pressed
                 auto inputFuture = std::async(std::launch::async, []() {
                     std::cin.get();
                 });
 
                 int step = 1;
                 while (inputFuture.wait_for(std::chrono::seconds(0)) != std::future_status::ready) {
-                    // Limpia la consola en cada iteración (ANSI escape sequence)
+                    // clear the screen on each refresh (ANSI Escape Code)
                     std::cout << "\033[2J\033[1;1H";
 
                     std::cout << "=================================================\n";
@@ -113,15 +113,15 @@ int main() {
                     std::cout << "  [Simulation #: " << step++ << "] - PRESS [ENTER] TO STOP...\n";
                     std::cout << "=================================================\n";
 
-                    // Generar y procesar señales
+                    //Generate random signals (could be out of bounds)
                     currentSignals = gateway.generateRandomSignals();
                     currentValidation = gateway.validateSignals(currentSignals);
                     currentReport = control.evaluateAndDecide(currentSignals, currentValidation);
 
-                    // Desplegar el estado actualizado en el mismo lugar
+                    // Display the current platform status
                     control.displayPlatformStatus(currentSignals, currentValidation, currentReport);
 
-                    // Pausa de 1 segundo entre adquisiciones
+                    // 1 second pause between readings
                     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
                 }
 
@@ -130,17 +130,17 @@ int main() {
             }
  
             case 3: {
-                // Limpiar cualquier carácter residual en el buffer de entrada
+                // clear any residual characters in the input buffer
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-                // Escucha asíncrona para detener la simulación al presionar Enter
+                // start an asynchronous listener to stop the simulation when Enter is pressed
                 auto inputFuture = std::async(std::launch::async, []() {
                     std::cin.get();
                 });
 
                 int step = 1;
                 while (inputFuture.wait_for(std::chrono::seconds(0)) != std::future_status::ready) {
-                    // Limpiar pantalla en cada refresco (ANSI Escape Code)
+                    // clear the screen on each refresh (ANSI Escape Code)
                     std::cout << "\033[2J\033[1;1H";
 
                     std::cout << "=================================================\n";
@@ -148,22 +148,22 @@ int main() {
                     std::cout << "  [Step: " << step++ << "] - Press [ENTER] to stop...\n";
                     std::cout << "=================================================\n";
 
-                    // Generar señales DENTRO del rango operacional seguro
+                    // Generate normal signals within safe ranges
                     currentSignals = gateway.generateNormalSignals();
                     currentValidation = gateway.validateSignals(currentSignals);
                     currentReport = control.evaluateAndDecide(currentSignals, currentValidation);
 
-                    // Refrescar el estado en pantalla
+                    // Display the current platform status
                     control.displayPlatformStatus(currentSignals, currentValidation, currentReport);
 
-                    // Pausa de 1 segundo entre lecturas
+                    // 1 second pause between readings
                     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
                 }
 
                 std::cout << "\n--- Simulation Stopped by User ---\n";
                 break;
             }
-            
+
             case 4: {
                 control.displayPlatformStatus(currentSignals, currentValidation, currentReport);
                 break;

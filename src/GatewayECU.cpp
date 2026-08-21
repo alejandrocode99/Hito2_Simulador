@@ -68,6 +68,7 @@ SignalValidation GatewayECU::validateSignals(const SignalData& signals)  {
     return val;
 }
 
+//Random signal generation (could be out of bounds)
 SignalData GatewayECU::generateRandomSignals() {
     static std::mt19937 gen(std::random_device{}());
 
@@ -77,6 +78,26 @@ SignalData GatewayECU::generateRandomSignals() {
     std::uniform_real_distribution<double> tempDist(-10.0, 120.0); 
     std::uniform_real_distribution<double> throttleDist(0.0, 110.0);
     std::uniform_real_distribution<double> batteryDist(9.0, 16.0);
+
+    SignalData randomSignals;
+    randomSignals.speed = speedDist(gen);
+    randomSignals.rpm = rpmDist(gen);
+    randomSignals.temperature = tempDist(gen);
+    randomSignals.throttle = throttleDist(gen);
+    randomSignals.battery = batteryDist(gen);
+
+    return randomSignals;
+}
+
+//Normal signal generation within safe ranges
+SignalData GatewayECU::generateNormalSignals() {
+    static std::mt19937 gen(std::random_device{}());
+
+    std::uniform_real_distribution<double> speedDist(10.0, 120.0);
+    std::uniform_int_distribution<int> rpmDist(1200, 3500);
+    std::uniform_real_distribution<double> tempDist(75.0, 95.0);   
+    std::uniform_real_distribution<double> throttleDist(10.0, 60.0);
+    std::uniform_real_distribution<double> batteryDist(12.5, 14.2); 
 
     SignalData randomSignals;
     randomSignals.speed = speedDist(gen);

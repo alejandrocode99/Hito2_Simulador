@@ -68,7 +68,7 @@ SignalValidation GatewayECU::validateSignals(const SignalData& signals)  {
     return val;
 }
 
-SignalData GatewayECU::generateRandomSignals() const {
+SignalData GatewayECU::generateRandomSignals() {
     static std::mt19937 gen(std::random_device{}());
 
     // Limits for each random value signal

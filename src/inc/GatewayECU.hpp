@@ -11,7 +11,7 @@ public:
     static SignalValidation validateSignals(const SignalData& signals);
 
     // Generate random signals within safe ranges
-    SignalData generateRandomSignals() const;
+    static SignalData generateRandomSignals();
 
     // Range validation helper functions
     static bool validateSpeed(double speed);

@@ -1,6 +1,9 @@
 #include <iostream>
 #include <limits>
 #include <algorithm>
+#include <thread>
+#include <chrono>
+#include <future>
 #include "GatewayECU.hpp"
 #include "ControlECU.hpp"
 
@@ -53,22 +56,24 @@ int main() {
     bool running = true;
     while (running) {
         std::cout << "\nSuggested Menu:\n";
-std::cout << "1. Input signal values\n";
+        std::cout << "1. Input signal values\n";
         std::cout << "2. Simulate system behavior (could get out of bounds)\n";
-        std::cout << "3. Show current system state\n";
-        std::cout << "4. Restart system\n";
-        std::cout << "5. Exit\n";
-        std::cout << "Select option [1-5]: ";
+        std::cout << "3. Simulate system behavior (within bounds)\n";
+        std::cout << "4. Show current system state\n";
+        std::cout << "5. Restart system\n";
+        std::cout << "6. Exit\n";
+        std::cout << "Select option [1-6]: ";
 
         int choice;
         if (!(std::cin >> choice)) {
-            std::cout << "[ERROR] Invalid choice. Please enter a number between 1 and 5.\n";
+            std::cout << "[ERROR] Invalid choice. Please enter a number between 1 and 6.\n";
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             continue;
         }
 
         switch (choice) {
+
             case 1: {
                 std::cout << "\n--- Signal Entry ---\n";
                 currentSignals.speed = readDouble("Input speed km/h: ");
@@ -90,43 +95,93 @@ std::cout << "1. Input signal values\n";
             
             case 2: {
 
-                std::cout << "\n--- Simulating System Behavior (Random Signals) ---\n";
-                    //for (int step = 1; step <= 5; ++step) {
-                    //std::cout << "\n>>> [SIMULATION STEP " << step << "/5] <<<\n";
+                // Limpiar cualquier carácter residual en el buffer de entrada
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-                    // 1. Generar señales aleatorias desde el Gateway
+                // Iniciar escucha asíncrona de teclado (espera a que el usuario presione Enter)
+                auto inputFuture = std::async(std::launch::async, []() {
+                    std::cin.get();
+                });
+
+                int step = 1;
+                while (inputFuture.wait_for(std::chrono::seconds(0)) != std::future_status::ready) {
+                    // Limpia la consola en cada iteración (ANSI escape sequence)
+                    std::cout << "\033[2J\033[1;1H";
+
+                    std::cout << "=================================================\n";
+                    std::cout << "  RUNNING CONTINUOUS SYSTEM BEHAVIOR SIMULATION  \n";
+                    std::cout << "  [Simulation #: " << step++ << "] - PRESS [ENTER] TO STOP...\n";
+                    std::cout << "=================================================\n";
+
+                    // Generar y procesar señales
                     currentSignals = gateway.generateRandomSignals();
-
-                    // 2. Validar plausibilidad física con las reglas del Gateway
                     currentValidation = gateway.validateSignals(currentSignals);
-
-                     // 3. Evaluar reglas de diagnóstico en la ECU de Control
                     currentReport = control.evaluateAndDecide(currentSignals, currentValidation);
 
-                    // 4. Desplegar resultados
+                    // Desplegar el estado actualizado en el mismo lugar
                     control.displayPlatformStatus(currentSignals, currentValidation, currentReport);
-                //}
-                break;
 
+                    // Pausa de 1 segundo entre adquisiciones
+                    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                }
+
+                std::cout << "\n--- Simulation Stopped by User ---\n";
+                break;
+            }
+ 
+            case 3: {
+                // Limpiar cualquier carácter residual en el buffer de entrada
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+                // Escucha asíncrona para detener la simulación al presionar Enter
+                auto inputFuture = std::async(std::launch::async, []() {
+                    std::cin.get();
+                });
+
+                int step = 1;
+                while (inputFuture.wait_for(std::chrono::seconds(0)) != std::future_status::ready) {
+                    // Limpiar pantalla en cada refresco (ANSI Escape Code)
+                    std::cout << "\033[2J\033[1;1H";
+
+                    std::cout << "=================================================\n";
+                    std::cout << "  SIMULATION: WITHIN BOUNDS (NORMAL OPERATION)   \n";
+                    std::cout << "  [Step: " << step++ << "] - Press [ENTER] to stop...\n";
+                    std::cout << "=================================================\n";
+
+                    // Generar señales DENTRO del rango operacional seguro
+                    currentSignals = gateway.generateNormalSignals();
+                    currentValidation = gateway.validateSignals(currentSignals);
+                    currentReport = control.evaluateAndDecide(currentSignals, currentValidation);
+
+                    // Refrescar el estado en pantalla
+                    control.displayPlatformStatus(currentSignals, currentValidation, currentReport);
+
+                    // Pausa de 1 segundo entre lecturas
+                    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                }
+
+                std::cout << "\n--- Simulation Stopped by User ---\n";
+                break;
             }
             
-            case 3: {
+            case 4: {
                 control.displayPlatformStatus(currentSignals, currentValidation, currentReport);
                 break;
             }
-            case 4: {
+            case 5: {
                 control.restart(currentSignals);
                 currentValidation = gateway.validateSignals(currentSignals);
                 currentReport = control.evaluateAndDecide(currentSignals, currentValidation);
                 break;
             }
-            case 5: {
+            case 6: {
                 control.shutdown();
                 running = false;
                 break;
             }
+
             default: {
-                std::cout << "[ERROR] Invalid option selected. Please choose 1, 2, 3, 4 or 5.\n";
+                std::cout << "[ERROR] Invalid option selected. Please choose 1, 2, 3, 4, 5 or 6.\n";
                 break;
             }
         }

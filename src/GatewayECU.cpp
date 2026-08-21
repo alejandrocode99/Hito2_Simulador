@@ -23,7 +23,7 @@ bool GatewayECU::validateBattery(double voltage) {
     return voltage >= 9.0 && voltage <= 16.0;
 }
 
-SignalValidation GatewayECU::validateSignals(const SignalData& signals) const {
+SignalValidation GatewayECU::validateSignals(const SignalData& signals)  {
     SignalValidation val;
 
     val.speedValid = validateSpeed(signals.speed);

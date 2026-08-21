@@ -8,7 +8,7 @@ public:
     GatewayECU() = default;
 
     // Validate individual ranges and check for physical signal plausibility
-    SignalValidation validateSignals(const SignalData& signals) const;
+    static SignalValidation validateSignals(const SignalData& signals);
 
     // Generate random signals within safe ranges
     SignalData generateRandomSignals() const;

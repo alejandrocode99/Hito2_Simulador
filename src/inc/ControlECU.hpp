@@ -28,8 +28,6 @@ public:
                               const SignalValidation& validation, 
                               const DiagnosticReport& report) const;
 
-    ECUState getState() const { return currentState; }
-    std::string getStateString() const { return ecuStateToString(currentState); }
 };
 
 #endif // CONTROL_ECU_HPP

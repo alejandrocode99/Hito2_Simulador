@@ -24,9 +24,7 @@ public:
     DiagnosticReport evaluateAndDecide(const SignalData& signals, const SignalValidation& validation);
 
     // Display formatted platform status matching spec requirements
-    void displayPlatformStatus(const SignalData& signals, 
-                              const SignalValidation& validation, 
-                              const DiagnosticReport& report) const;
+    
 
 };
 

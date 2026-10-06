@@ -4,7 +4,7 @@ BUILD_DIR = build
 CXX = g++
 CXXFLAGS = -Wall -Wextra -pedantic -std=c++17
 TARGET = ecu_simulation
-OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/GatewayECU.o $(BUILD_DIR)/ControlECU.o
+OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/Simulator.o $(BUILD_DIR)/GatewayECU.o $(BUILD_DIR)/ControlECU.o $(BUILD_DIR)/Dashboard.o
 CPPCHECK = cppcheck
 
 

@@ -3,7 +3,7 @@
 This project implements a simulated Electronic Control Unit (ECU) platform in C++ with separated responsibilities between a **Gateway ECU** and a **Control ECU**.
 
 ## Architecture Overview
-- **Gateway ECU**: Responsible for signal validation. It reads 5 vehicle input signals (Speed, RPM, Temperature, Throttle, Battery Voltage) via `std::cin`, verifies min/max range limits, and checks for physical implausibilities.
+- **Gateway ECU**: Responsible for validating the 5 vehicle signals (Speed, RPM, Temperature, Throttle, Battery Voltage), checking range limits, and detecting physical implausibilities. Signal values are generated automatically by the simulator.
 - **Control ECU**: Responsible for system state decisions based on valid signals. It manages a 6-state state machine (`INIT`, `SELF_TEST`, `OPERATIONAL`, `DEGRADED`, `SAFE_STATE`, `SHUTDOWN`), checks signal threshold conditions (Normal, Warning, Critical), and evaluates cross-signal coherence.
 
 ## Signal Ranges & Thresholds
@@ -18,7 +18,7 @@ This project implements a simulated Electronic Control Unit (ECU) platform in C+
 
 ## State Machine Transitions
 - **`INIT`**: System initialization.
-- **`SELF_TEST`**: Executed upon startup and restart to verify sensor channels and state logic.
+- **`SELF_TEST`**: Executed upon startup to verify sensor channels and state logic.
 - **`OPERATIONAL`**: Active when all signals are normal and coherent.
 - **`DEGRADED`**: Active when one or more warning conditions exist.
 - **`SAFE_STATE`**: Active when any critical condition occurs (highest priority).
@@ -41,8 +41,5 @@ g++ -Wall -Wextra -pedantic -std=c++17 main.cpp GatewayECU.cpp ControlECU.cpp -o
 ./ecu_simulation
 ```
 
-## Menu Options
-1. **Input signal values**: Manually enter Speed, RPM, Temperature, Throttle, and Battery Voltage.
-2. **Show current system state**: Displays the full `PLATFORM STATUS` panel.
-3. **Restart system**: Re-runs initialization and self-test sequence.
-4. **Exit**: Gracefully shuts down the ECU and terminates the simulation.
+## Vehicle Simulation
+The program starts the vehicle simulation automatically. It generates plausible initial signals and updates them every second. Speed, RPM, and throttle evolve together; temperature changes gradually toward operating temperature and the running battery voltage stays near its charging level. Press Enter to stop the simulation and gracefully shut down the ECU.
